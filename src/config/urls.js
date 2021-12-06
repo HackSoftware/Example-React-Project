@@ -3,3 +3,5 @@ export const BASE_API_URL = `${BASE_BACKEND_URL}/api`;
 
 export const HOME_URL = '/home';
 export const LOGIN_URL = '/auth/login';
+
+export const FILES_UPLOAD_URL = '/files/upload';

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import { useState } from 'react';
 
+import { setToken } from 'config/storage';
 import { BASE_API_URL } from 'config/urls';
 
 const LoginPage = () => {
@@ -9,9 +10,11 @@ const LoginPage = () => {
   const [password, setPassword] = useState();
 
   const login = () => {
-    axios.post(`${BASE_API_URL}/auth/login/`, { email, password }).then(() => {
-      console.log('logged in');
-    });
+    axios
+      .post(`${BASE_API_URL}/auth/login/`, { email, password })
+      .then(({ data }) => {
+        setToken(data.session);
+      });
   };
 
   return (
