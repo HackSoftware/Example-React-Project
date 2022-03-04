@@ -1,5 +1,4 @@
 /*
-
 Replace this code in public/index.html to see it in action
 
 <!DOCTYPE html>
@@ -38,29 +37,34 @@ Replace this code in public/index.html to see it in action
 
     function fileGeneratePresignedPost({ fileName, fileType }) {
       return axios.post(
-        'http://localhost:8000/api/files/private-presigned-post/',
+        'http://localhost:8000/api/files/generate-presigned-post/',
         { file_name: fileName, file_type: fileType },
         getCSRFConfig()
       );
     }
 
     function uploadFile({ data, file }) {
-
       const postData = new FormData();
 
       for (const key in data?.fields) {
         postData.append(key, data.fields[key]);
       }
+
       postData.append('file', file);
 
+      let postParams = getCSRFConfig();
+
+      // If we're uploading to S3, detach the authorization cookie.
+      if (data?.fields) {
+        postParams = {};
+      }
 
       return axios
-        .post(data.url, postData, data.params)
+        .post(data.url, postData, postParams)
         .then(() => Promise.resolve({ fileId: data.identifier }));
     }
 
-    const verifyUpload = ({data}) => {
-
+    const verifyUpload = ({ data }) => {
       return axios.post(
         `http://localhost:8000/api/files/${data.identifier}/verify-upload/`,
         {},
@@ -71,19 +75,21 @@ Replace this code in public/index.html to see it in action
     function onChange(files) {
       const file = files[0];
 
-
       if (file) {
         fileGeneratePresignedPost({
           fileName: file.name,
           fileType: file.type
         })
-          .then((response) => {
-
-            return uploadFile({ data: response.data, file }).then(() => verifyUpload({data: response.data})).then(() => {
-              console.log("File upload completed!")
-            })
-
-          })
+          .then((response) =>
+            uploadFile({ data: response.data, file })
+              .then(() => verifyUpload({ data: response.data }))
+              .then(() => {
+                console.log('File upload completed!');
+              })
+          )
+          .catch((error) => {
+            console.log('File upload failed!');
+          });
       }
     }
   </script>
@@ -93,7 +99,6 @@ Replace this code in public/index.html to see it in action
     <div id="root"></div>
   </body>
 </html>
-
 */
 
 const FilesUploadJsExample = () => {
