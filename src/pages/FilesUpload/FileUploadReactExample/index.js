@@ -13,7 +13,7 @@ const FileUploadReactExample = () => {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Session ${token}`
+        Authorization: `Bearer ${token}`
       },
       withCredentials: true
     };
@@ -37,7 +37,7 @@ const FileUploadReactExample = () => {
 
   const fileGeneratePresignedPost = ({ fileName, fileType }) => {
     return axios.post(
-      `${BASE_BACKEND_URL}/api/files/generate-presigned-post/`,
+      `${BASE_BACKEND_URL}/api/files/upload/pass-thru/start/`,
       { file_name: fileName, file_type: fileType },
       getCSRFConfig()
     );
@@ -61,13 +61,13 @@ const FileUploadReactExample = () => {
 
     return axios
       .post(data.url, postData, postParams)
-      .then(() => Promise.resolve({ fileId: data.identifier }));
+      .then(() => Promise.resolve({ fileId: data.id }));
   };
 
   const verifyUpload = ({ data }) => {
     return axios.post(
-      `${BASE_BACKEND_URL}/api/files/${data.identifier}/verify-upload/`,
-      {},
+      `${BASE_BACKEND_URL}/api/files/upload/pass-thru/finish/`,
+      { file_id: data.id },
       getCSRFConfig()
     );
   };
@@ -95,6 +95,7 @@ const FileUploadReactExample = () => {
 
   return (
     <div>
+      <h1>Pass-thru upload</h1>
       <div>Select files to upload:</div>
 
       <input id="input" type="file" onChange={onInputChange} />
