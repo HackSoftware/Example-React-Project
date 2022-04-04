@@ -1,11 +1,11 @@
 // See FilesUploadJsExample file if you want to have this code in pure html
 
-import FileUploadReactExample from './FileUploadReactExample';
+import DirectUploadExample from './Direct';
 
 const UploadFiles = () => {
   return (
     <>
-      <FileUploadReactExample />
+      <DirectUploadExample />
     </>
   );
 };
