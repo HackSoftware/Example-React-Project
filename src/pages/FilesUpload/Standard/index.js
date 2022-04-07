@@ -2,23 +2,10 @@ import axios from 'axios';
 import { useState } from 'react';
 
 import { BASE_BACKEND_URL } from 'config/urls';
+import { getConfig } from 'config/api';
 
 const StandardUploadExample = () => {
   const [message, setMessage] = useState();
-
-  const getConfig = () => {
-    const token = window.localStorage.getItem('token');
-
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      withCredentials: true
-    };
-
-    return config;
-  };
 
   const uploadFile = ({ file }) => {
     const postData = new FormData();

@@ -2,20 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 
 import { BASE_BACKEND_URL } from 'config/urls';
-
-const getConfig = () => {
-  const token = window.localStorage.getItem('token');
-
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    withCredentials: true
-  };
-
-  return config;
-};
+import { getConfig } from 'config/api';
 
 const DirectUploadExample = () => {
   const [message, setMessage] = useState();
