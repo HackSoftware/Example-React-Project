@@ -1,49 +1,36 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { useState } from 'react';
 
 import { BASE_BACKEND_URL } from 'config/urls';
 
+const getConfig = () => {
+  const token = window.localStorage.getItem('token');
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    withCredentials: true
+  };
+
+  return config;
+};
+
 const DirectUploadExample = () => {
   const [message, setMessage] = useState();
 
-  const getConfig = () => {
-    const token = window.localStorage.getItem('token');
-
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      withCredentials: true
-    };
-
-    return config;
-  };
-
-  const getCSRFConfig = () => {
-    const csrf = Cookies.get('csrftoken');
-
-    const config = getConfig();
-
-    return {
-      ...config,
-      headers: {
-        ...config.headers,
-        'X-CSRFToken': csrf
-      }
-    };
-  };
-
-  const fileGeneratePresignedPost = ({ fileName, fileType }) => {
+  const directUploadStart = ({ fileName, fileType }) => {
     return axios.post(
       `${BASE_BACKEND_URL}/api/files/upload/direct/start/`,
       { file_name: fileName, file_type: fileType },
-      getCSRFConfig()
+      getConfig()
     );
   };
 
-  const uploadFile = ({ data, file }) => {
+  const directUploadDo = ({ data, file }) => {
+    console.log(data);
+
     const postData = new FormData();
 
     for (const key in data?.fields) {
@@ -52,9 +39,10 @@ const DirectUploadExample = () => {
 
     postData.append('file', file);
 
-    let postParams = getCSRFConfig();
+    let postParams = getConfig();
 
     // If we're uploading to S3, detach the authorization cookie.
+    // Otherwise, we'll get CORS error from S3
     if (data?.fields) {
       postParams = {};
     }
@@ -64,11 +52,11 @@ const DirectUploadExample = () => {
       .then(() => Promise.resolve({ fileId: data.id }));
   };
 
-  const verifyUpload = ({ data }) => {
+  const directUploadFinish = ({ data }) => {
     return axios.post(
       `${BASE_BACKEND_URL}/api/files/upload/direct/finish/`,
       { file_id: data.id },
-      getCSRFConfig()
+      getConfig()
     );
   };
 
@@ -76,13 +64,13 @@ const DirectUploadExample = () => {
     const file = event.target.files[0];
 
     if (file) {
-      fileGeneratePresignedPost({
+      directUploadStart({
         fileName: file.name,
         fileType: file.type
       })
         .then((response) =>
-          uploadFile({ data: response.data, file })
-            .then(() => verifyUpload({ data: response.data }))
+          directUploadDo({ data: response.data, file })
+            .then(() => directUploadFinish({ data: response.data }))
             .then(() => {
               setMessage('File upload completed!');
             })
