@@ -1,24 +1,23 @@
-import { Router, Route, Redirect, Switch } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import { HOME_URL } from './urls';
+import { HOME_URL, LOGIN_URL, FILES_UPLOAD_URL } from 'config/urls';
 
-import Home from '../pages/Home';
+import Home from 'pages/Home';
 
-export const history = createBrowserHistory();
+import Login from 'pages/Login';
 
-const Routes = () => {
+import FilesUpload from 'pages/FilesUpload';
+
+const AppRoutes = () => {
   return (
-    <Router history={history}>
-      <Switch>
-        <Route exact path={HOME_URL} component={Home} />
-
-        <Route exact path="/">
-          <Redirect to={HOME_URL} />
-        </Route>
-      </Switch>
-    </Router>
+    <BrowserRouter>
+      <Routes>
+        <Route path={LOGIN_URL} element={<Login />} />
+        <Route path={HOME_URL} element={<Home />} />
+        <Route path={FILES_UPLOAD_URL} element={<FilesUpload />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
-export default Routes;
+export default AppRoutes;

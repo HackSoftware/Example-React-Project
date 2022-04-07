@@ -1,8 +1,6 @@
 const HomePage = () => (
   <div>
-    <div>Agenda with pages</div>
-
-    <div>Go to /login</div>
+    <p>Placeholder for the home page.</p>
   </div>
 );
 
